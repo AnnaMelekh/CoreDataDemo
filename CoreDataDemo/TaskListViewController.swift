@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 class TaskListViewController: UITableViewController {
-    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+//    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     private let cellID = "task"
     private var taskList: [Task] = []
@@ -64,6 +64,7 @@ class TaskListViewController: UITableViewController {
     
     @objc private func addNewTask() {
         showAlert(with: "New task", and: "What do you want to do?")
+        
     }
     
     private func fetchData(){
@@ -82,7 +83,9 @@ class TaskListViewController: UITableViewController {
         let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
             guard let task = alert.textFields?.first?.text, !task.isEmpty else { return }
             StorageManager.shared.save(task)
-                      
+            self.fetchData()
+            self.tableView.reloadData()
+
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
@@ -92,7 +95,10 @@ class TaskListViewController: UITableViewController {
         alert.addTextField { textField in
             textField.placeholder = "New Task"
         }
+        
         present(alert, animated: true)
+        tableView.reloadData()
+        
     }
     
 //    private func save(_ taskName: String){
@@ -130,13 +136,23 @@ extension TaskListViewController {
         
     }
     
-        override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-            switch editingStyle {
-            case .delete:
-                StorageManager.shared.deleteTask(at: indexPath)
-            default:
-                break
-            }
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        .delete
+    }
+    
+       
+    
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+            if editingStyle == .delete {
+                let task = taskList.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                
+                context.delete(task)
+                saveContext()
+                
+                tableView.reloadData()
+        }
         }
         
         override func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {

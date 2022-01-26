@@ -30,7 +30,7 @@ func saveContext() {
         do {
             try context.save()
         } catch {
-           
+            
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
@@ -43,30 +43,29 @@ class StorageManager {
     
     private init() {}
     
-    
+   
     func save(_ taskName: String){
-
-    let task = Task(context: context)
+        
+        let task = Task(context: context)
         task.name = taskName
         taskList.append(task)
         
         let taskListVC = TaskListViewController()
         let cellIndex = IndexPath(row: taskList.count - 1, section: 0)
         taskListVC.tableView.insertRows(at: [cellIndex], with: .automatic)
-
-//        saveContext()
+        
         do {
             try context.save()
         } catch {
-
             print(error)
         }
     }
     
-    func deleteTask(at indexPath: IndexPath) {
-            let task = taskList.remove(at: indexPath.row)
-            context.delete(task)
-            
-        }
-
+//    func delete(at indexPath: IndexPath){
+//        let taskListVC = TaskListViewController()
+//        let task = taskList.remove(at: indexPath.row)
+//        taskListVC.tableView.deleteRows(at: [indexPath], with: .fade)
+//        context.delete(task)
+//        saveContext()
+//    }
 }
