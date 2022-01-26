@@ -59,9 +59,7 @@ class TaskListViewController: UITableViewController {
     
     
     @objc private func addNewTask() {
-        let newTaskVC = TaskViewController()
-        newTaskVC.modalPresentationStyle = .fullScreen
-        present(newTaskVC, animated: true)
+        showAlert(with: "New task", and: "What do you want to do?")
     }
     
     private func fetchData(){
@@ -74,8 +72,47 @@ class TaskListViewController: UITableViewController {
         }
     }
     
-}
+    
+    private func showAlert(with title: String, and message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+            guard let task = alert.textFields?.first?.text, !task.isEmpty else { return }
+            StorageManager.shared.save(task)
+            
+            
+            let cellIndex = IndexPath(row: self.taskList.count - 1, section: 0)
+            self.tableView.insertRows(at: [cellIndex], with: .automatic)
+            
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
+        alert.addAction(saveAction)
+        alert.addAction(cancelAction)
+        
+        alert.addTextField { textField in
+            textField.placeholder = "New Task"
+        }
+        present(alert, animated: true)
+    }
+    
+//    private func save(_ taskName: String){
+//    let task = Task(context: context)
+//        task.name = taskName
+//        taskList.append(task)
+//
+//        let cellIndex = IndexPath(row: taskList.count - 1, section: 0)
+//        tableView.insertRows(at: [cellIndex], with: .automatic)
+//
+//        do {
+//            try context.save()
+//        } catch {
+//
+//            print(error)
+//        }
+//    }
 
+}
+    
 extension TaskListViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
