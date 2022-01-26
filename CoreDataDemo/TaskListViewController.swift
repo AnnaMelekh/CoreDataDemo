@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import CoreData
+//import CoreData
 
 class TaskListViewController: UITableViewController {
 //    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
