@@ -6,8 +6,11 @@
 //
 
 import UIKit
+import CoreData
 
 class TaskViewController: UIViewController {
+    
+    private let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     private lazy var taskTextField: UITextField = {
        let textField = UITextField()
@@ -20,13 +23,13 @@ class TaskViewController: UIViewController {
         createButton(title: "Save Task",
                      color: UIColor(red: 21/255, green: 101/255, blue: 192/255, alpha:194/255),
                      action: UIAction { _ in
-            self.dismiss(animated: true)
+            self.save()
         })
     }()
     
     private lazy var cancelButton: UIButton = {
         createButton(title: "Cancel",
-                     color: UIColor(red: 221/255, green: 101/255, blue: 192/255, alpha:194/255),
+                     color: .systemRed,
                      action: UIAction { _ in
             self.dismiss(animated: true)
         })
@@ -81,6 +84,27 @@ class TaskViewController: UIViewController {
         buttonConfiguration.attributedTitle = AttributedString(title, attributes: attributes)
         
         return UIButton(configuration: buttonConfiguration, primaryAction: action)
-        
 }
+    
+    private func save(){
+//        для сложных взаимосвязей в модели
+//        guard let entityDescription = NSEntityDescription.entity(forEntityName: "Task", in: context) else { return }
+//        guard let task = NSManagedObject(entity: entityDescription, insertInto: context) as? Task else { return }
+        
+        let task = Task(context: context)
+        
+        task.name = taskTextField.text
+        
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+               
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+        
+        dismiss(animated: true)
+    }
 }
