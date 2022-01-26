@@ -29,6 +29,8 @@ class TaskListViewController: UITableViewController {
         fetchData()
         tableView.reloadData()
     }
+    
+    
 
     private func setupNavigationBar() {
         title = "Task List"
@@ -55,6 +57,8 @@ class TaskListViewController: UITableViewController {
             action: #selector(addNewTask)
         )
         navigationController?.navigationBar.tintColor = .white
+        
+        navigationItem.leftBarButtonItem = editButtonItem
     }
     
     
@@ -78,11 +82,7 @@ class TaskListViewController: UITableViewController {
         let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
             guard let task = alert.textFields?.first?.text, !task.isEmpty else { return }
             StorageManager.shared.save(task)
-            
-            
-            let cellIndex = IndexPath(row: self.taskList.count - 1, section: 0)
-            self.tableView.insertRows(at: [cellIndex], with: .automatic)
-            
+                      
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .destructive)
@@ -129,5 +129,18 @@ extension TaskListViewController {
         return cell
         
     }
+    
+        override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+            switch editingStyle {
+            case .delete:
+                StorageManager.shared.deleteTask(at: indexPath)
+            default:
+                break
+            }
+        }
+        
+        override func tableView(_ tableView: UITableView, titleForDeleteConfirmationButtonForRowAt indexPath: IndexPath) -> String? {
+            "Delete"
+        }
 }
 

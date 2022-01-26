@@ -8,7 +8,8 @@
 import Foundation
 import CoreData
 
-private var taskList: [Task] = []
+
+var taskList: [Task] = []
 
 var persistentContainer: NSPersistentContainer = {
     
@@ -23,7 +24,7 @@ var persistentContainer: NSPersistentContainer = {
 
 let context = persistentContainer.viewContext
 
-func saveContext () {
+func saveContext() {
     
     if context.hasChanges {
         do {
@@ -44,23 +45,28 @@ class StorageManager {
     
     
     func save(_ taskName: String){
-        
-            
+
     let task = Task(context: context)
         task.name = taskName
         taskList.append(task)
         
-        guard let taskListVC = UIViewController as? TaskListViewController else {return}
-                
+        let taskListVC = TaskListViewController()
         let cellIndex = IndexPath(row: taskList.count - 1, section: 0)
         taskListVC.tableView.insertRows(at: [cellIndex], with: .automatic)
-        
+
+//        saveContext()
         do {
             try context.save()
         } catch {
-            
+
             print(error)
         }
     }
+    
+    func deleteTask(at indexPath: IndexPath) {
+            let task = taskList.remove(at: indexPath.row)
+            context.delete(task)
+            
+        }
 
 }
